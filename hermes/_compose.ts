@@ -1,27 +1,33 @@
-import type { ReportData } from './_query';
+import type { ReportData } from "./_query"
 
-const fmt = (n: number, decimals = 2) => n.toFixed(decimals);
+const fmt = (n: number, decimals = 2) => n.toFixed(decimals)
 
 export function composeWeeklyReportHtml(data: ReportData): string {
-  const { summary, top3 } = data;
+  const { summary, top3 } = data
 
   // Recommendation: if nano ratio is < 50%, suggest more summarize routing
-  const total = summary.superCallCount + summary.nanoCallCount;
-  const nanoRatio = total > 0 ? summary.nanoCallCount / total : 0;
-  const recommendationText = nanoRatio < 0.5
-    ? `Nano 비중을 50% 이상으로 늘리면 카본·비용 추가 절감 여지가 큽니다 (현재 ${(nanoRatio * 100).toFixed(0)}%).`
-    : `Nano 비중 ${(nanoRatio * 100).toFixed(0)}% — 충분합니다. 시간대 라우팅 도입 시 추가 절감 가능.`;
+  const total = summary.superCallCount + summary.nanoCallCount
+  const nanoRatio = total > 0 ? summary.nanoCallCount / total : 0
+  const recommendationText =
+    nanoRatio < 0.5
+      ? `Nano 비중을 50% 이상으로 늘리면 카본·비용 추가 절감 여지가 큽니다 (현재 ${(nanoRatio * 100).toFixed(0)}%).`
+      : `Nano 비중 ${(nanoRatio * 100).toFixed(0)}% — 충분합니다. 시간대 라우팅 도입 시 추가 절감 가능.`
 
-  const top3Rows = top3.length === 0
-    ? `<tr><td colspan="4">데이터 없음</td></tr>`
-    : top3.map((r) => `
+  const top3Rows =
+    top3.length === 0
+      ? `<tr><td colspan="4">데이터 없음</td></tr>`
+      : top3
+          .map(
+            (r) => `
         <tr>
           <td>${escapeHtml(new Date(r.ts).toISOString())}</td>
           <td>${escapeHtml(r.modelId)}</td>
           <td>${fmt(r.carbonGrams, 3)}g</td>
           <td>$${fmt(r.costUsd, 5)}</td>
         </tr>
-      `).join('');
+      `,
+          )
+          .join("")
 
   return `<!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><title>Joule Weekly Report</title>
@@ -57,14 +63,14 @@ export function composeWeeklyReportHtml(data: ReportData): string {
 <h2>3. 권장 액션</h2>
 <div class="reco">${escapeHtml(recommendationText)}</div>
 
-</body></html>`;
+</body></html>`
 }
 
 function escapeHtml(s: string): string {
   return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
 }

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
+  "extends": ["../.shared/biome.json"],
+  "files": {
+    "includes": [
+      "!node_modules",
+      "!dashboard/node_modules",
+      "!dist",
+      "!.next",
+      "!dashboard/.next",
+      "!**/*.min.js",
+      "!package-lock.json",
+      "!dashboard/package-lock.json",
+      "!joule.db",
+      "!joule.db-shm",
+      "!joule.db-wal"
+    ]
+  }
+}

@@ -1,19 +1,19 @@
-import nodemailer from 'nodemailer';
-import type { SmtpClient, SmtpSendInput } from './index';
+import nodemailer from "nodemailer"
+import type { SmtpClient, SmtpSendInput } from "./index"
 
 export interface RealSmtpConfig {
-  user: string;
-  appPassword: string;
+  user: string
+  appPassword: string
 }
 
 export function createRealSmtp(config: RealSmtpConfig): SmtpClient {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
       user: config.user,
       pass: config.appPassword,
     },
-  });
+  })
 
   return {
     async send(input: SmtpSendInput): Promise<void> {
@@ -22,7 +22,7 @@ export function createRealSmtp(config: RealSmtpConfig): SmtpClient {
         to: input.to,
         subject: input.subject,
         html: input.html,
-      });
+      })
     },
-  };
+  }
 }

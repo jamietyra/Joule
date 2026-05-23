@@ -1,0 +1,33 @@
+# Joule v0.1 — pre-commit gates (per CLAUDE.md Rule 6)
+# Run: `pre-commit install` once, then commits auto-gate.
+
+repos:
+  # Hook 1: detect-secrets (catches .env leaks, accidentally committed keys)
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: '^(package-lock\.json|dashboard/package-lock\.json|\.secrets\.baseline|docs/.*\.md)$'
+
+  # Hook 2: biome check (auto-fix lint + format on .ts/.tsx/.js/.jsx/.json files)
+  - repo: local
+    hooks:
+      - id: biome-check
+        name: biome check (auto-fix)
+        entry: biome check --write
+        language: system
+        types: [text]
+        files: '\.(ts|tsx|js|jsx|json)$'
+        exclude: '^(node_modules/|dashboard/node_modules/|dist/|\.next/|dashboard/\.next/|package-lock\.json|dashboard/package-lock\.json)$'
+        pass_filenames: true
+
+  # Hook 3: TypeScript typecheck for the joule core
+  - repo: local
+    hooks:
+      - id: typecheck-core
+        name: tsc --noEmit (core)
+        entry: bash -c 'cd C:/Users/3900x/Desktop/Jamie/IT/joule && npm run typecheck'
+        language: system
+        files: '^(src/|hermes/|scripts/).*\.tsx?$'
+        pass_filenames: false
