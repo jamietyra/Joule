@@ -2,57 +2,88 @@
 
 > **AI에게, 자기가 쓴 전기 요금을 청구하는 에이전트.**
 
-LLM·생성형 AI 워크로드의 **비용·전력·탄소**를 추적하고, 작업마다 "충분한 최소
-모델"을 자동 선택하며, 저탄소 시간대로 작업을 배치하는 자율 에이전트.
+Joule은 **Carbon-aware AI Gateway** — LLM 호출의 탄소·비용을 실시간으로 추적하고, 작업마다 "충분한 최소 모델"을 자동 선택해 절감을 최대화하는 OpenAI 호환 프록시입니다.
 
-특정 사용자 전용이 아닌 **범용 SaaS** — AI를 많이 쓰는 누구에게나.
+**DevNetwork [AI+ML] Hackathon 2026 — Crusoe 챌린지 출품작.**
 
----
+## 1줄 진입점 — base_url Diff
 
-## 무엇을 해결하나
+기존 OpenAI 클라이언트의 `base_url` 한 줄만 바꾸면 됩니다:
 
-생성형 AI는 토큰마다 전기를 쓴다. 하지만 대부분의 팀은:
+```python
+# Before
+client = OpenAI(api_key="sk-...", base_url="https://api.openai.com/v1")
 
-- 어떤 작업에 **얼마의 전력·탄소·비용**이 드는지 모른다.
-- 간단한 작업에도 **과한 대형 모델**을 습관적으로 쓴다.
-- 전력 탄소 강도가 낮은 시간대를 활용하지 못한다.
-
-Joule은 이 셋을 자동화한다.
-
-## 핵심 기능 (계획)
-
-1. **추적** — AI 사용 로그에서 작업별 비용·전력(kWh)·탄소(gCO₂)를 산출.
-2. **최소 모델 자동 선택** — 작업 난이도를 보고 Nemotron Nano ↔ Super 중
-   "충분한 최소 모델"을 고른다.
-3. **저탄소 배치** — 시급하지 않은 작업을 탄소 강도가 낮은 시간대로 미룬다.
-
-## 스택
-
-| 레이어 | 기술 |
-|--------|------|
-| 추론 | Crusoe Managed Inference |
-| 모델 | NVIDIA Nemotron 3 (Nano ↔ Super) |
-| 샌드박스 | NemoClaw |
-| 에이전트 | Hermes |
-
-## 셋업
-
-```bash
-# 1. 환경 변수
-cp .env.example .env      # PowerShell: Copy-Item .env.example .env
-# .env 에 CRUSOE_API_KEY 입력
-
-# 2. (의존성·실행 명령 — 추후 추가)
+# After (route through Joule)
+client = OpenAI(api_key="any", base_url="http://localhost:3001/v1")
 ```
 
-> ⚠️ 이 저장소는 **public** 입니다. API 키·토큰은 `.env` 에만 두고
-> 코드·로그·커밋에 절대 포함하지 마세요.
+이후 모든 요청은:
+1. Joule이 intent를 분류 (Nano ~10ms)
+2. 자동으로 Nemotron Nano(요약) 또는 Super(추론·코드) 라우팅
+3. Crusoe Managed Inference 호출
+4. `X-Carbon-grams` 헤더 추출 + 정적 환산표 fallback (Defensive)
+5. SQLite call log 기록
+6. OpenAI 호환 응답 반환
 
-## 컨텍스트
+## Quick Start
 
-DevNetwork [AI+ML] Hackathon 2026 — Crusoe 챌린지 출품작.
-마감: 2026-05-28 10:00 AM PDT.
+```bash
+# 1. 의존성 설치
+npm install
 
-## 라이선스
+# 2. .env 설정
+cp .env.example .env
+# .env 에 CRUSOE_API_KEY 채우기
 
-[MIT](./LICENSE) © 2026 Jamie
+# 3. Joule core 기동 (localhost:3001)
+npm run dev
+
+# 4. Dashboard 기동 (localhost:3000, 별도 터미널)
+cd dashboard && npm install && npm run dev
+
+# 5. Hermes 주간 리포트 (dry-run preview)
+npx tsx hermes/index.ts run weekly-report --dry-run \
+  --db ./joule.db --to demo@example.com \
+  --output /tmp/weekly-report-preview.html
+
+# 6. Persona seed (대시보드 차트 데이터)
+npx tsx scripts/generate_personas.ts --seed 42
+```
+
+## Architecture
+
+Local-first. 모든 process가 같은 머신에서 동작:
+
+- **Joule core** — Hono on Node 20, localhost:3001 (Gateway + Routing + Inference + Carbon + Storage 5 module)
+- **Dashboard** — Next.js 14 app router, localhost:3000 (recharts + SQLite read)
+- **Hermes** — CLI binary (manual trigger v0.1; 자율 cron post-hackathon)
+- **공유 상태** — `./joule.db` (better-sqlite3 WAL)
+
+외부 호스팅 없음 (Vercel/Railway 없음). 정적 landing만 GitHub Pages.
+
+## 5컷 데모
+
+- `scripts/verify-shot-1.sh` — BaseURLDiff (chatcmpl- id 응답)
+- `scripts/verify-shot-2.sh` — AutoModelSelection (summarize→nano, code→super)
+- `scripts/verify-shot-3.sh` — Dashboard cumulative (live data point)
+- `scripts/verify-shot-4.sh` — Hermes dry-run preview (3-block HTML)
+- `scripts/verify-shot-5.sh` — XCarbonGrams source label (static/header)
+
+## 데모 영상
+
+(녹화 후 placeholder 교체)
+
+- YouTube: `<TODO>`
+- 길이: ~2:30
+- 5컷 라이브 + 카메라 컷
+
+## 개발
+
+- Test: `npm test` — 33 tests across 7 files
+- Typecheck: `npm run typecheck`
+- Pre-commit: `pre-commit install` (auto-formatter + detect-secrets + tsc)
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
