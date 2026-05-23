@@ -11,14 +11,22 @@ export interface RealAdapterConfig {
   timeoutMs?: number; // default 30000
 }
 
+// Joule internal modelId → Crusoe catalog id. Joule's storage/routing/UI use the
+// short form; only the HTTP boundary translates.
+const CRUSOE_MODEL_ID: Record<string, string> = {
+  'nano-30b-a3b': 'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B',
+  'super-120b-a12b': 'nvidia/NVIDIA-Nemotron-3-Super-120B-A12B',
+};
+
 export function createRealAdapter(config: RealAdapterConfig): CrusoeInferenceClient {
   const timeoutMs = config.timeoutMs ?? 30_000;
 
   return {
     async chat(req: ChatRequest): Promise<InferenceResult> {
       const url = `${config.baseUrl}/chat/completions`;
+      const crusoeModel = CRUSOE_MODEL_ID[req.modelId] ?? req.modelId;
       const body = JSON.stringify({
-        model: req.modelId,
+        model: crusoeModel,
         messages: req.messages,
         temperature: req.temperature ?? 0.7,
         max_tokens: req.maxTokens ?? 1024,
