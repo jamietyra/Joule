@@ -1,0 +1,23 @@
+{
+  "name": "joule",
+  "version": "0.1.0",
+  "description": "Carbon-aware AI Gateway for Crusoe Managed Inference",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4",
+    "better-sqlite3": "^11",
+    "undici": "^7"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "vitest": "^2",
+    "@types/node": "^20",
+    "tsx": "^4"
+  }
+}
