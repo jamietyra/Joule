@@ -1,3 +1,5 @@
+import { createRealSmtp } from './_real-smtp';
+
 export interface SmtpSendInput {
   to: string;
   subject: string;
@@ -8,9 +10,14 @@ export interface SmtpClient {
   send(input: SmtpSendInput): Promise<void>;
 }
 
-// T21 will fill this in to return the nodemailer-based Real adapter.
 export function createFromEnv(): SmtpClient {
-  throw new Error('Not implemented in T19 — T21 will wire createFromEnv to nodemailer real-smtp');
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  if (!user || !pass) {
+    throw new Error('GMAIL_USER and GMAIL_APP_PASSWORD env vars are required (see .env.example)');
+  }
+  return createRealSmtp({ user, appPassword: pass });
 }
 
 export { createDryRun } from './_dry-run';
+export { createRealSmtp } from './_real-smtp';
