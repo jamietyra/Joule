@@ -1,5 +1,6 @@
 import { ChartSavings, type DailyAggregate } from '@/components/chart-savings';
 import { ChartMix } from '@/components/chart-mix';
+import { SubtitleSource } from '@/components/subtitle-source';
 import { readAll, aggregateSavings } from '@/lib/storage';
 
 export const dynamic = 'force-dynamic';
@@ -43,6 +44,7 @@ export default function Home() {
       <p style={{ color: '#666', marginTop: 0 }}>
         총 {records.length}건 호출 · CO₂ {agg.totalCarbonGrams.toFixed(2)}g · 비용 ${agg.totalCostUsd.toFixed(4)}
       </p>
+      <SubtitleSource />
 
       <section style={{ marginTop: 24 }}>
         <h2 style={{ fontSize: 16 }}>누적 절감 (30일)</h2>
