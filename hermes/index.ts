@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+import { createAgent, createJouleLlm } from "./_agent"
 import { composeWeeklyReportHtml } from "./_compose"
 import { queryReportData } from "./_query"
 import { createDryRun, createFromEnv } from "./_smtp/index"
@@ -10,6 +11,8 @@ interface CliArgs {
   db: string
   to: string
   output: string
+  baseUrl: string | null
+  question: string | null
 }
 
 function parseArgs(argv: string[]): CliArgs {
@@ -20,16 +23,22 @@ function parseArgs(argv: string[]): CliArgs {
     db: "./joule.db",
     to: "",
     output: "",
+    baseUrl: null,
+    question: null,
   }
   let i = 0
   if (argv[i] && !argv[i]?.startsWith("--")) {
     args.subcommand = argv[i] ?? null
     i++
   }
-  if (argv[i] && !argv[i]?.startsWith("--")) {
+  // For 'ask', the second positional may be the question or a flag.
+  // For 'run', it's the report type.
+  if (args.subcommand !== "ask" && argv[i] && !argv[i]?.startsWith("--")) {
     args.reportType = argv[i] ?? null
     i++
   }
+  // Collect remaining positionals (non-flag tokens) for the question
+  const positionals: string[] = []
   for (; i < argv.length; i++) {
     const a = argv[i]
     if (a === "--dry-run") args.dryRun = true
@@ -42,7 +51,16 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (a === "--output" && argv[i + 1]) {
       args.output = argv[i + 1] ?? ""
       i++
+    } else if (a === "--base-url" && argv[i + 1]) {
+      args.baseUrl = argv[i + 1] ?? null
+      i++
+    } else if (!a?.startsWith("--")) {
+      positionals.push(a)
     }
+  }
+  // For 'ask', the last (or only) positional is the question
+  if (args.subcommand === "ask" && positionals.length > 0) {
+    args.question = positionals[positionals.length - 1] ?? null
   }
   return args
 }
@@ -62,6 +80,16 @@ export async function runWeeklyReport(args: CliArgs): Promise<void> {
   })
 }
 
+export async function runAsk(
+  question: string,
+  opts: { db: string; baseUrl: string },
+): Promise<{ answer: string; toolUsed: string | null }> {
+  const llm = createJouleLlm({ baseUrl: opts.baseUrl })
+  const agent = createAgent({ llm, context: { dbPath: opts.db } })
+  const result = await agent.ask(question)
+  return { answer: result.answer, toolUsed: result.toolUsed }
+}
+
 // Only run as CLI when invoked directly (not when imported by tests)
 const isMain =
   import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}` ||
@@ -74,9 +102,27 @@ if (isMain) {
       console.error("hermes error:", err)
       process.exit(1)
     })
+  } else if (args.subcommand === "ask") {
+    if (!args.question) {
+      console.error('Usage: hermes ask [--db <path>] [--base-url <url>] "<question>"')
+      process.exit(1)
+    }
+    runAsk(args.question, {
+      db: args.db,
+      baseUrl: args.baseUrl ?? "http://localhost:3001/v1",
+    })
+      .then((r) => {
+        console.log(r.answer)
+      })
+      .catch((err) => {
+        console.error("hermes ask error:", err)
+        process.exit(1)
+      })
   } else {
     console.error(
-      "Usage: hermes run weekly-report [--dry-run] [--db <path>] [--to <email>] [--output <path>]",
+      "Usage:\n" +
+        "  hermes run weekly-report [--dry-run] [--db <path>] [--to <email>] [--output <path>]\n" +
+        '  hermes ask [--db <path>] [--base-url <url>] "<question>"',
     )
     process.exit(1)
   }

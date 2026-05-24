@@ -88,6 +88,8 @@ describe("Hermes report composition", () => {
       db: dbPath,
       to: "test@example.com",
       output: outputPath,
+      baseUrl: null,
+      question: null,
     })
 
     expect(existsSync(outputPath)).toBe(true)
