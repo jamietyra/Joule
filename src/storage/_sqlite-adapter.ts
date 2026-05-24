@@ -1,6 +1,23 @@
-import fs from "node:fs"
 import Database from "better-sqlite3"
 import type { CallLogRecord } from "./index"
+
+// Schema inlined to avoid import.meta.url issues when bundled by Next.js
+const SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS call_log (
+  id TEXT PRIMARY KEY,
+  ts INTEGER NOT NULL,
+  model_id TEXT NOT NULL,
+  prompt_tokens INTEGER,
+  completion_tokens INTEGER,
+  carbon_grams REAL,
+  cost_usd REAL,
+  source TEXT,
+  routing_decision TEXT,
+  persona_tag TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_call_log_model_id ON call_log(model_id);
+`
 
 interface AggregateResult {
   totalCarbonGrams: number
@@ -53,7 +70,7 @@ function rowToRecord(row: DbRow): CallLogRecord {
 }
 
 export function createSqliteAdapter(dbPath: string): SqliteAdapter {
-  const schemaSql = fs.readFileSync(new URL("./_schema.sql", import.meta.url), "utf-8")
+  const schemaSql = SCHEMA_SQL
 
   const db = new Database(dbPath)
   db.pragma("journal_mode = WAL")
