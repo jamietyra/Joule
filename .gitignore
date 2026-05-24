@@ -63,6 +63,9 @@ tmp/
 *.sqlite
 *.sqlite3
 
+# --- 데모 산출물 (Hermes 주간 리포트 dry-run preview) ---
+weekly-report-preview.html
+
 # --- OS / IDE ---
 .DS_Store
 Thumbs.db

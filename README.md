@@ -48,7 +48,7 @@ npx tsx hermes/index.ts ask "이번 주 절감 얼마야?"
 # 5b. Hermes 주간 리포트 — dry-run preview (선택)
 npx tsx hermes/index.ts run weekly-report --dry-run \
   --db ./joule.db --to demo@example.com \
-  --output /tmp/weekly-report-preview.html
+  --output ./weekly-report-preview.html
 
 # 6. Persona seed (대시보드 차트 데이터)
 npx tsx scripts/generate_personas.ts --seed 42

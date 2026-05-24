@@ -6,8 +6,8 @@
 set -u
 
 DB_PATH="${JOULE_DB_PATH:-./joule.db}"
-# Use a path that works on both Linux and Git Bash (/tmp exists on Git Bash for Windows)
-PREVIEW_PATH="${PREVIEW_PATH:-/tmp/weekly-report-preview.html}"
+# Default: write next to joule.db (repo root). Override via PREVIEW_PATH env.
+PREVIEW_PATH="${PREVIEW_PATH:-./weekly-report-preview.html}"
 
 # 1) Remove any previous preview
 rm -f "$PREVIEW_PATH"
@@ -18,7 +18,7 @@ npx tsx hermes/index.ts run weekly-report \
   --db "$DB_PATH" \
   --to test@example.com \
   --output "$PREVIEW_PATH" \
-  > /tmp/hermes-shot4.log 2>&1
+  > ./hermes-shot4.log 2>&1
 
 HERMES_EXIT=$?
 

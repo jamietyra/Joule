@@ -70,7 +70,7 @@ export async function runWeeklyReport(args: CliArgs): Promise<void> {
   const html = composeWeeklyReportHtml(data)
 
   const smtp = args.dryRun
-    ? createDryRun({ outputPath: args.output || "/tmp/weekly-report-preview.html" })
+    ? createDryRun({ outputPath: args.output || "./weekly-report-preview.html" })
     : createFromEnv()
 
   await smtp.send({

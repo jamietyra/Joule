@@ -1,8 +1,16 @@
 import { writeFileSync } from "node:fs"
+import { dirname, isAbsolute, resolve } from "node:path"
 import { type CallLogRecord, createCallLog } from "../src/storage/index"
 import { composeWeeklyReportHtml } from "./_compose"
 import { queryReportData } from "./_query"
 import { createDryRun, createFromEnv } from "./_smtp/index"
+
+// Weekly-report HTML lives next to the SQLite DB so the path is the same
+// regardless of cwd (CLI from repo root, or dashboard route from dashboard/).
+function defaultReportPath(dbPath: string): string {
+  const abs = isAbsolute(dbPath) ? dbPath : resolve(process.cwd(), dbPath)
+  return resolve(dirname(abs), "weekly-report-preview.html")
+}
 
 export type ToolName =
   | "getAggregateSavings"
@@ -170,7 +178,7 @@ export async function executeTool(
     }
 
     case "generateReport": {
-      const output = (args.output as string | undefined) ?? "/tmp/weekly-report-preview.html"
+      const output = (args.output as string | undefined) ?? defaultReportPath(ctx.dbPath)
       const data = queryReportData(ctx.dbPath)
       const html = composeWeeklyReportHtml(data)
       writeFileSync(output, html, "utf-8")
@@ -192,7 +200,7 @@ export async function executeTool(
 
       const forceDryRun = process.env.HERMES_FORCE_DRY_RUN === "true"
       if (forceDryRun) {
-        const output = "/tmp/weekly-report-preview.html"
+        const output = defaultReportPath(ctx.dbPath)
         const dry = createDryRun({ outputPath: output })
         await dry.send({ to: toRaw, subject: "Joule — Weekly Report", html })
         return {
