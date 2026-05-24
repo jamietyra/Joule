@@ -132,8 +132,8 @@ Each script works when Joule core (:3001) or Dashboard (:3000) is running.
 (Replace placeholder after recording)
 
 - YouTube: `<TODO>`
-- Length: ~2:30
-- 5 live cuts + camera cut
+- Length: ~3:00
+- 6 live cuts (BaseURLDiff / AutoModelSelection / Dashboard cumulative / Hermes chat / XCarbonGrams source / Weekly Report HTML)
 
 ## Development
 
