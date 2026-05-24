@@ -1,5 +1,6 @@
 import { ChartMix } from "@/components/chart-mix"
 import { ChartSavings, type DailyAggregate } from "@/components/chart-savings"
+import { HermesChat } from "@/components/hermes-chat"
 import { SubtitleSource } from "@/components/subtitle-source"
 import { aggregateSavings, readAll } from "@/lib/storage"
 
@@ -46,6 +47,7 @@ export default function Home() {
         {agg.totalCostUsd.toFixed(4)}
       </p>
       <SubtitleSource />
+      <HermesChat />
 
       <section style={{ marginTop: 24 }}>
         <h2 style={{ fontSize: 16 }}>누적 절감 (30일)</h2>
