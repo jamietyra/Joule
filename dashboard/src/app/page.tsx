@@ -43,19 +43,19 @@ export default function Home() {
     <main style={{ maxWidth: 1100, margin: "0 auto" }}>
       <h1 style={{ marginBottom: 8 }}>Joule — Carbon-aware AI Gateway</h1>
       <p style={{ color: "#666", marginTop: 0 }}>
-        총 {records.length}건 호출 · CO₂ {agg.totalCarbonGrams.toFixed(2)}g · 비용 $
+        Total {records.length} calls · CO₂ {agg.totalCarbonGrams.toFixed(2)}g · Cost $
         {agg.totalCostUsd.toFixed(4)}
       </p>
       <SubtitleSource />
       <HermesChat />
 
       <section style={{ marginTop: 24 }}>
-        <h2 style={{ fontSize: 16 }}>누적 절감 (30일)</h2>
+        <h2 style={{ fontSize: 16 }}>Cumulative Savings (30 days)</h2>
         <ChartSavings data={dailyAggs} />
       </section>
 
       <section style={{ marginTop: 24 }}>
-        <h2 style={{ fontSize: 16 }}>Super / Nano 호출 분포</h2>
+        <h2 style={{ fontSize: 16 }}>Super / Nano Call Mix</h2>
         <ChartMix superCount={agg.superCallCount} nanoCount={agg.nanoCallCount} />
       </section>
     </main>

@@ -34,7 +34,7 @@ export function ChartSavings({ data }: ChartSavingsProps) {
             type="monotone"
             dataKey="cumulativeCarbonGrams"
             stroke="#10b981"
-            name="누적 CO2 (g)"
+            name="Cumulative CO₂ (g)"
             dot={(props) => {
               const { cx, cy, index } = props
               return <circle key={index} cx={cx} cy={cy} r={3} fill="#10b981" data-bar="carbon" />
@@ -44,7 +44,7 @@ export function ChartSavings({ data }: ChartSavingsProps) {
             type="monotone"
             dataKey="cumulativeCostUsd"
             stroke="#2563eb"
-            name="누적 비용 ($)"
+            name="Cumulative Cost ($)"
             dot={(props) => {
               const { cx, cy, index } = props
               return <circle key={index} cx={cx} cy={cy} r={3} fill="#2563eb" data-bar="cost" />

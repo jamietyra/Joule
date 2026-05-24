@@ -21,12 +21,12 @@ export function SubtitleSource() {
   }, [])
 
   const label = loading
-    ? "측정 소스 확인 중..."
+    ? "Loading measurement source..."
     : source === "static"
-      ? "측정: Joule 환산표 (CO₂)"
+      ? "Source: Joule conversion table (CO₂)"
       : source === "header"
-        ? "측정: X-Carbon-grams 헤더 직접 (CO₂)"
-        : "측정: 데이터 없음"
+        ? "Source: X-Carbon-grams header (direct)"
+        : "Source: no data yet"
 
   const badgeColor = source === "header" ? "#10b981" : source === "static" ? "#6b7280" : "#9ca3af"
 

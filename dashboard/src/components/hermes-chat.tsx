@@ -9,10 +9,10 @@ interface ChatMessage {
 }
 
 const EXAMPLE_PROMPTS = [
-  "이번 주 절감 얼마야?",
-  "Top 3 비싼 호출은?",
-  "Super 와 Nano 비율?",
-  "주간 리포트 만들어줘",
+  "How much did we save this week?",
+  "What are the top 3 most expensive calls?",
+  "What's the Super vs Nano ratio?",
+  "Generate the weekly report",
 ]
 
 export function HermesChat() {
@@ -57,7 +57,7 @@ export function HermesChat() {
           {
             id: `a-${Date.now()}`,
             role: "assistant",
-            text: data.answer ?? "(빈 응답)",
+            text: data.answer ?? "(empty response)",
             toolUsed: data.toolUsed ?? null,
           },
         ])
@@ -66,7 +66,7 @@ export function HermesChat() {
       const msg = err instanceof Error ? err.message : String(err)
       setMessages((m) => [
         ...m,
-        { id: `e-${Date.now()}`, role: "error", text: `네트워크 오류: ${msg}` },
+        { id: `e-${Date.now()}`, role: "error", text: `Network error: ${msg}` },
       ])
     } finally {
       setLoading(false)
@@ -108,7 +108,9 @@ export function HermesChat() {
         </div>
         <div>
           <div style={{ fontSize: 16, fontWeight: 600 }}>Hermes Agent</div>
-          <div style={{ fontSize: 11, color: "#6b7280" }}>Joule 자체를 거쳐 자기 카본도 측정됨</div>
+          <div style={{ fontSize: 11, color: "#6b7280" }}>
+            Routed through Joule itself — agent measures its own carbon
+          </div>
         </div>
       </div>
 
@@ -127,7 +129,7 @@ export function HermesChat() {
       >
         {messages.length === 0 && !loading && (
           <div style={{ color: "#9ca3af", fontSize: 13, textAlign: "center", padding: 16 }}>
-            자연어로 물어보세요. 예시 버튼을 눌러도 됩니다.
+            Ask in natural language. Or tap an example below.
           </div>
         )}
         {messages.map((m) => (
@@ -175,7 +177,7 @@ export function HermesChat() {
         ))}
         {loading && (
           <div data-loading="1" style={{ color: "#6b7280", fontSize: 13, paddingLeft: 6 }}>
-            Hermes 가 생각 중...
+            Hermes is thinking...
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -211,7 +213,7 @@ export function HermesChat() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="자연어로 질문하기..."
+          placeholder="Ask in natural language..."
           disabled={loading}
           style={{
             flex: 1,
@@ -235,7 +237,7 @@ export function HermesChat() {
             fontWeight: 600,
           }}
         >
-          {loading ? "..." : "전송"}
+          {loading ? "..." : "Send"}
         </button>
       </form>
     </section>
