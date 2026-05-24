@@ -106,7 +106,7 @@ describe("Hermes tools", () => {
     expect(existsSync(output)).toBe(true)
     expect(r.htmlBytes).toBeGreaterThan(100)
     const html = readFileSync(output, "utf-8")
-    expect(html).toContain("Top 3 호출")
+    expect(html).toContain("Top 3 Calls")
   })
 
   it("sendWeeklyReport with HERMES_FORCE_DRY_RUN=true falls back to dry-run", async () => {

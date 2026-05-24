@@ -10,12 +10,12 @@ export function composeWeeklyReportHtml(data: ReportData): string {
   const nanoRatio = total > 0 ? summary.nanoCallCount / total : 0
   const recommendationText =
     nanoRatio < 0.5
-      ? `Nano 비중을 50% 이상으로 늘리면 카본·비용 추가 절감 여지가 큽니다 (현재 ${(nanoRatio * 100).toFixed(0)}%).`
-      : `Nano 비중 ${(nanoRatio * 100).toFixed(0)}% — 충분합니다. 시간대 라우팅 도입 시 추가 절감 가능.`
+      ? `Raising Nano share above 50% can unlock further carbon and cost savings (currently ${(nanoRatio * 100).toFixed(0)}%).`
+      : `Nano share is ${(nanoRatio * 100).toFixed(0)}% — already strong. Time-of-day routing could add further savings.`
 
   const top3Rows =
     top3.length === 0
-      ? `<tr><td colspan="4">데이터 없음</td></tr>`
+      ? `<tr><td colspan="4">No data</td></tr>`
       : top3
           .map(
             (r) => `
@@ -30,7 +30,7 @@ export function composeWeeklyReportHtml(data: ReportData): string {
           .join("")
 
   return `<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"><title>Joule Weekly Report</title>
+<html lang="en"><head><meta charset="utf-8"><title>Joule Weekly Report</title>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 640px; margin: 24px auto; color: #1a1a1a; }
   h2 { border-bottom: 2px solid #2563eb; padding-bottom: 4px; }
@@ -43,24 +43,24 @@ export function composeWeeklyReportHtml(data: ReportData): string {
   .reco { background: #fef3c7; padding: 12px; border-radius: 6px; }
 </style></head><body>
 
-<h1>Joule — 주간 리포트</h1>
+<h1>Joule — Weekly Report</h1>
 
-<h2>1. 누적 절감</h2>
+<h2>1. Cumulative Savings</h2>
 <div>
-  <div class="stat"><div class="num">${fmt(summary.totalCarbonGrams, 2)}g</div><div class="label">CO₂ 누적</div></div>
-  <div class="stat"><div class="num">$${fmt(summary.totalCostUsd, 4)}</div><div class="label">비용 누적</div></div>
-  <div class="stat"><div class="num">${summary.totalCalls}</div><div class="label">총 호출</div></div>
-  <div class="stat"><div class="num">${summary.nanoCallCount}</div><div class="label">Nano 호출</div></div>
-  <div class="stat"><div class="num">${summary.superCallCount}</div><div class="label">Super 호출</div></div>
+  <div class="stat"><div class="num">${fmt(summary.totalCarbonGrams, 2)}g</div><div class="label">CO₂ total</div></div>
+  <div class="stat"><div class="num">$${fmt(summary.totalCostUsd, 4)}</div><div class="label">Cost total</div></div>
+  <div class="stat"><div class="num">${summary.totalCalls}</div><div class="label">Total calls</div></div>
+  <div class="stat"><div class="num">${summary.nanoCallCount}</div><div class="label">Nano calls</div></div>
+  <div class="stat"><div class="num">${summary.superCallCount}</div><div class="label">Super calls</div></div>
 </div>
 
-<h2>2. Top 3 호출 (비용 기준)</h2>
+<h2>2. Top 3 Calls (by cost)</h2>
 <table>
-  <thead><tr><th>시각</th><th>모델</th><th>탄소</th><th>비용</th></tr></thead>
+  <thead><tr><th>Time</th><th>Model</th><th>Carbon</th><th>Cost</th></tr></thead>
   <tbody>${top3Rows}</tbody>
 </table>
 
-<h2>3. 권장 액션</h2>
+<h2>3. Recommended Actions</h2>
 <div class="reco">${escapeHtml(recommendationText)}</div>
 
 </body></html>`

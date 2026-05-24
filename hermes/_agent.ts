@@ -57,22 +57,22 @@ If no tool fits, reply:
 {"tool": null, "args": {}}
 
 Examples:
-User: 이번 주 절감 얼마야?
+User: How much did we save this week?
 Reply: {"tool":"getAggregateSavings","args":{}}
 
-User: Top 5 비싼 호출 보여줘
+User: Show top 5 most expensive calls
 Reply: {"tool":"getTopCalls","args":{"n":5}}
 
-User: 모델 비율은?
+User: What's the Super vs Nano ratio?
 Reply: {"tool":"getModelMix","args":{}}
 
-User: 리포트 만들어줘
+User: Generate the weekly report
 Reply: {"tool":"generateReport","args":{}}
 
-User: jamie@example.com 으로 리포트 보내
+User: Send the report to jamie@example.com
 Reply: {"tool":"sendWeeklyReport","args":{"to":"jamie@example.com"}}
 
-User: 안녕
+User: Hi
 Reply: {"tool":null,"args":{}}
 
 Only output the JSON. No explanation.`
@@ -107,28 +107,27 @@ export function parsePlannerOutput(raw: string): PlannerDecision {
 // Responder — converts tool result into Korean text
 // ──────────────────────────────────────────────────────────────
 
-const RESPONDER_SYSTEM_PROMPT = `당신은 Hermes — Joule 에이전트입니다. 사용자가 한국어로 질문했고, 도구 실행 결과(JSON)가 주어집니다. 결과를 한국어 1~3 문장으로 자연스럽게 요약해 답하세요.
+const RESPONDER_SYSTEM_PROMPT = `You are Hermes — the Joule agent. The user asked a question in English and a tool was executed (its result is provided as JSON). Summarize the result in 1–3 natural English sentences as the final answer to the user.
 
-규칙:
-- 숫자는 가독성 있게 (소수점 2~3자리, 통화는 $).
-- 도구 결과의 핵심 수치를 반드시 포함.
-- 사용자 질문에 직접 답할 것 (메타 설명 X).
-- "도구를 호출했습니다" 같은 메타 발언 금지.`
+Rules:
+- Format numbers cleanly (2–3 decimals; currency with $).
+- Always include the key numbers from the tool result.
+- Answer the user directly. No meta phrases like "I called the tool".`
 
 function buildResponderUserPrompt(
   userQuestion: string,
   toolName: ToolName,
   toolResult: ToolResult,
 ): string {
-  return `사용자 질문: ${userQuestion}
+  return `User question: ${userQuestion}
 
-도구 ${toolName} 실행 결과:
+Tool ${toolName} execution result:
 ${JSON.stringify(toolResult, null, 2)}
 
-위 결과를 바탕으로 한국어로 답해주세요.`
+Use the result above to answer the user in English.`
 }
 
-const FALLBACK_SYSTEM_PROMPT = `당신은 Hermes — Joule 에이전트입니다. 사용자의 질문에 한국어 1~2 문장으로 간단히 답하세요. Joule 의 호출 통계와 관련된 질문에는 "탄소 절감, Top 비싼 호출, 모델 비율, 주간 리포트 등을 물어보실 수 있습니다." 라고 안내해도 됩니다.`
+const FALLBACK_SYSTEM_PROMPT = `You are Hermes — the Joule agent. Answer the user briefly (1–2 sentences) in English. If they ask about Joule data, suggest: "You can ask about carbon savings, top expensive calls, model mix, or the weekly report."`
 
 // ──────────────────────────────────────────────────────────────
 // Main agent loop
@@ -175,7 +174,7 @@ export function createAgent(config: AgentConfig) {
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
         return {
-          answer: `도구 ${decision.tool} 실행 중 오류가 발생했습니다: ${msg}`,
+          answer: `Tool ${decision.tool} failed: ${msg}`,
           toolUsed: decision.tool,
           toolArgs: decision.args,
           toolResult: null,

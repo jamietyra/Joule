@@ -35,31 +35,33 @@ export interface ToolDefinition {
 export const TOOLS: ToolDefinition[] = [
   {
     name: "getAggregateSavings",
-    description: "전체 호출의 누적 CO2(g), 비용($), Super/Nano 호출 수, 총 호출 수를 반환합니다.",
+    description:
+      "Returns total CO₂ (g), cost ($), Super/Nano call counts, and total call count across all logged calls.",
     parameters: {},
     effect: "read-only",
   },
   {
     name: "getTopCalls",
-    description: "비용($) 기준 상위 N개 호출을 반환합니다.",
+    description: "Returns the top N most expensive calls (by cost in USD).",
     parameters: {
-      n: { type: "number", description: "반환할 호출 수 (1~10)", default: 3 },
+      n: { type: "number", description: "Number of calls to return (1–10).", default: 3 },
     },
     effect: "read-only",
   },
   {
     name: "getModelMix",
-    description: "Super 와 Nano 호출의 비율과 카운트를 반환합니다.",
+    description: "Returns the ratio and counts of Super vs Nano calls.",
     parameters: {},
     effect: "read-only",
   },
   {
     name: "generateReport",
-    description: "주간 리포트 HTML 을 생성해 파일로 저장합니다 (메일 발송 안 함). 미리보기 용도.",
+    description:
+      "Generates the weekly report HTML and writes it to a file (no email send). Preview-only.",
     parameters: {
       output: {
         type: "string",
-        description: "저장 경로",
+        description: "Output file path.",
         default: "/tmp/weekly-report-preview.html",
       },
     },
@@ -68,11 +70,11 @@ export const TOOLS: ToolDefinition[] = [
   {
     name: "sendWeeklyReport",
     description:
-      "주간 리포트를 Gmail SMTP 로 실제 발송합니다. HERMES_FORCE_DRY_RUN=true 일 때는 파일로만 저장.",
+      "Sends the weekly report via Gmail SMTP. When HERMES_FORCE_DRY_RUN=true is set, writes to a file only.",
     parameters: {
       to: {
         type: "string",
-        description: "수신 이메일 주소",
+        description: "Recipient email address.",
         default: "env:HERMES_DEFAULT_TO",
       },
     },
@@ -233,6 +235,6 @@ export function renderToolCatalog(): string {
           `${k}: ${p.type}${p.default !== undefined ? ` (default: ${JSON.stringify(p.default)})` : ""} — ${p.description}`,
       )
       .join(", ")
-    return `- ${t.name}(${params || "없음"}) [${t.effect}] — ${t.description}`
+    return `- ${t.name}(${params || "none"}) [${t.effect}] — ${t.description}`
   }).join("\n")
 }

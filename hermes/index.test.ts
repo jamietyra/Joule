@@ -38,10 +38,10 @@ describe("Hermes report composition", () => {
       },
       top3: [sample],
     })
-    expect(html).toContain("누적 절감")
-    expect(html).toContain("Top 3 호출")
-    expect(html).toContain("권장 액션")
-    expect(html).toMatch(/Nano 비중/)
+    expect(html).toContain("Cumulative Savings")
+    expect(html).toContain("Top 3 Calls")
+    expect(html).toContain("Recommended Actions")
+    expect(html).toMatch(/Nano share/)
   })
 
   it("Top 3 sorted by cost desc", () => {
@@ -94,7 +94,7 @@ describe("Hermes report composition", () => {
 
     expect(existsSync(outputPath)).toBe(true)
     const html = readFileSync(outputPath, "utf-8")
-    expect(html).toContain("Top 3 호출")
+    expect(html).toContain("Top 3 Calls")
 
     // Windows: better-sqlite3 keeps the file handle open until GC.
     // rmSync with force:true silently skips locked files on Windows.

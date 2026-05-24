@@ -82,25 +82,25 @@ describe("Hermes agent", () => {
     expect(d.tool).toBe(null)
   })
 
-  it('agent routes "이번 주 절감" → getAggregateSavings → Korean summary', async () => {
+  it('agent routes "How much did we save" → getAggregateSavings → English summary', async () => {
     const llm = makeMockLlm([
       '{"tool":"getAggregateSavings","args":{}}',
-      "이번 주 누적 절감은 CO₂ 4.65g, 비용 $0.0026 입니다. 총 2건 호출 (Nano 1, Super 1).",
+      "This week saved CO₂ 4.65g and $0.0026 across 2 calls (Nano 1, Super 1).",
     ])
     const agent = createAgent({ llm, context: { dbPath } })
-    const r = await agent.ask("이번 주 절감 얼마야?")
+    const r = await agent.ask("How much did we save this week?")
     expect(r.toolUsed).toBe("getAggregateSavings")
     expect(r.toolResult?.kind).toBe("aggregateSavings")
-    expect(r.answer).toContain("절감")
+    expect(r.answer).toContain("saved")
   })
 
-  it('agent routes "Top 1 비싼 호출" → getTopCalls(n=1)', async () => {
+  it('agent routes "Top 1 most expensive call" → getTopCalls(n=1)', async () => {
     const llm = makeMockLlm([
       '{"tool":"getTopCalls","args":{"n":1}}',
-      "가장 비쌌던 호출은 super-120b-a12b 모델로 $0.0024 (CO₂ 4.2g).",
+      "The most expensive call used the super-120b-a12b model at $0.0024 (CO₂ 4.2g).",
     ])
     const agent = createAgent({ llm, context: { dbPath } })
-    const r = await agent.ask("Top 1 비싼 호출은?")
+    const r = await agent.ask("Show the top 1 most expensive call")
     expect(r.toolUsed).toBe("getTopCalls")
     if (r.toolResult?.kind === "topCalls") {
       expect(r.toolResult.n).toBe(1)
@@ -110,15 +110,12 @@ describe("Hermes agent", () => {
   })
 
   it("agent falls back to direct answer when planner returns null", async () => {
-    const llm = makeMockLlm([
-      '{"tool":null,"args":{}}',
-      "안녕하세요! Joule 에 대해 무엇이든 물어보세요.",
-    ])
+    const llm = makeMockLlm(['{"tool":null,"args":{}}', "Hello! Ask me anything about Joule."])
     const agent = createAgent({ llm, context: { dbPath } })
-    const r = await agent.ask("안녕")
+    const r = await agent.ask("Hi")
     expect(r.toolUsed).toBe(null)
     expect(r.toolResult).toBe(null)
-    expect(r.answer).toContain("안녕")
+    expect(r.answer).toContain("Joule")
   })
 
   it("agent recovers when tool throws (returns error message in answer)", async () => {
@@ -135,10 +132,10 @@ describe("Hermes agent", () => {
     delete process.env.HERMES_FORCE_DRY_RUN
     try {
       const agent = createAgent({ llm, context: { dbPath } })
-      const r = await agent.ask("test@example.com 으로 리포트 보내")
+      const r = await agent.ask("Send the report to test@example.com")
       expect(r.toolUsed).toBe("sendWeeklyReport")
       expect(r.toolResult).toBe(null)
-      expect(r.answer).toContain("오류")
+      expect(r.answer).toContain("failed")
     } finally {
       if (oldUser !== undefined) process.env.GMAIL_USER = oldUser
       if (oldPass !== undefined) process.env.GMAIL_APP_PASSWORD = oldPass
