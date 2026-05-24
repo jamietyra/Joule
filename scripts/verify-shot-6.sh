@@ -6,7 +6,7 @@
 set -u
 
 DASH_URL="${DASH_URL:-http://localhost:3000}"
-QUESTION="${HERMES_TEST_QUESTION:-이번 주 절감 얼마야?}"
+QUESTION="${HERMES_TEST_QUESTION:-How much did we save this week?}"
 
 # POST to /api/hermes
 # Use node to safely JSON-encode the question (handles Korean properly)
@@ -42,7 +42,7 @@ if [ -z "$ANSWER" ] || [ "${#ANSWER}" -lt 5 ]; then
   exit 1
 fi
 
-# Verify toolUsed is getAggregateSavings (since question = "이번 주 절감 얼마야?")
+# Verify toolUsed is getAggregateSavings (since question = "How much did we save this week?")
 if [ "$TOOL" != "getAggregateSavings" ]; then
   printf '{"shot":6,"pass":false,"reason":"unexpected tool","toolUsed":"%s","expected":"getAggregateSavings"}\n' "$TOOL"
   exit 1
