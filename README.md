@@ -137,7 +137,7 @@ Each script works when Joule core (:3001) or Dashboard (:3000) is running.
 
 ## Development
 
-- Test: `npm test` — 33 tests across 7 files
+- Test: `npm test` — 48 tests across 9 files
 - Typecheck: `npm run typecheck`
 - Pre-commit: `pre-commit install` (auto-formatter + detect-secrets + tsc)
 
