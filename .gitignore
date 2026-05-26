@@ -66,6 +66,11 @@ tmp/
 # --- 데모 산출물 (Hermes 주간 리포트 dry-run preview) ---
 weekly-report-preview.html
 
+# --- 내부 운영 문서 / 빌드 산출물 (public 노출 불필요) ---
+docs/session-resume.md
+docs/submission-guide.md
+docs/superpowers/
+
 # --- 데모 영상·오디오·자막 (YouTube 호스팅, repo 에는 안 들어감) ---
 # demo-final.mp4 가 113 MB 라 GitHub 100 MB 제한 초과 — 영상은 YouTube 만.
 *.mp4
