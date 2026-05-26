@@ -183,6 +183,8 @@ export function createAgent(config: AgentConfig) {
       }
 
       // STEP 3 — Responder
+      // Nano produced empty content on larger tool JSON (getTopCalls / getModelMix)
+      // during demo testing. Super is more reliable for natural-language summaries.
       const responderRaw = await config.llm.chat({
         messages: [
           { role: "system", content: RESPONDER_SYSTEM_PROMPT },
@@ -191,9 +193,9 @@ export function createAgent(config: AgentConfig) {
             content: buildResponderUserPrompt(userQuestion, decision.tool, toolResult),
           },
         ],
-        modelHint: "nano",
+        modelHint: "super",
         temperature: 0.2,
-        maxTokens: 300,
+        maxTokens: 500,
       })
 
       return {
