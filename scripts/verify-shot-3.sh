@@ -67,6 +67,13 @@ COUNT_AFTER=$(echo "$HTML_AFTER" | grep -o 'data-bar' | wc -l | tr -d ' ')
 
 # ── 5) Assert id changed ─────────────────────────────────────────────────────
 if [[ -n "$ID_AFTER" && "$ID_AFTER" != "$ID_BEFORE" ]]; then
+  echo ""
+  echo "[Cut 3] Dashboard cumulative -- live call propagates to the chart in real time"
+  echo "   OK  latest record before live call: $ID_BEFORE"
+  echo "   OK  sent 1 live request to Joule (:3001)"
+  echo "   OK  latest record after  live call: $ID_AFTER   <-- NEW record visible in dashboard"
+  echo "   OK  PASS -- SQLite WAL write -> Next.js dynamic refresh"
+  echo ""
   printf '{"shot":3,"pass":true,"id_before":"%s","id_after":"%s","data_bar_before":%s,"data_bar_after":%s}\n' \
     "$ID_BEFORE" "$ID_AFTER" "$COUNT_BEFORE" "$COUNT_AFTER"
   exit 0

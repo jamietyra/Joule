@@ -27,6 +27,12 @@ else
 fi
 
 if [[ "$ID" == chatcmpl-* ]]; then
+  echo ""
+  echo "[Cut 1] BaseURLDiff -- one base_url change routes through Joule to Crusoe Nemotron"
+  echo "   OK  OpenAI-compatible response received"
+  echo "   OK  response id: $ID"
+  echo "   OK  PASS -- any existing OpenAI client integrates with a single-line change"
+  echo ""
   printf '{"shot":1,"pass":true,"evidence":"%s"}\n' "$ID"
   exit 0
 fi

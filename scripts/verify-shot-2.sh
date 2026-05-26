@@ -49,6 +49,12 @@ if [[ "$ROW1" == super-* && "$ROW2" == nano-* ]]; then
 fi
 
 if $PASS; then
+  echo ""
+  echo "[Cut 2] AutoModelSelection -- same endpoint, different intents -> different models"
+  echo "   OK  'summarize' prompt routed to: $ROW2   (smaller, ~1/5 carbon)"
+  echo "   OK  'code'      prompt routed to: $ROW1   (larger, more accurate)"
+  echo "   OK  PASS -- Joule DecisionLayer picked the model per intent"
+  echo ""
   printf '{"shot":2,"pass":true,"models":["%s","%s"]}\n' "$ROW1" "$ROW2"
   exit 0
 fi

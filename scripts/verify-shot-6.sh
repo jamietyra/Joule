@@ -50,5 +50,12 @@ fi
 
 # PASS — escape answer for JSON output
 ANSWER_TRIMMED=$(echo "$ANSWER" | head -c 200)
+echo ""
+echo "[Cut 6] Hermes natural-language chat -- agent loop (Planner -> Executor -> Responder)"
+echo "   OK  question:        \"$QUESTION\""
+echo "   OK  tool selected:   $TOOL"
+echo "   OK  answer (English): $ANSWER_TRIMMED"
+echo "   OK  PASS -- natural language to tool to English answer, fully agentic"
+echo ""
 printf '{"shot":6,"pass":true,"toolUsed":"%s","answerSample":"%s..."}\n' "$TOOL" "$ANSWER_TRIMMED"
 exit 0

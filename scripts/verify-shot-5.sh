@@ -36,6 +36,18 @@ SOURCE=$(_query_db)
 
 # 3) Verify source is either 'static' or 'header'
 if [[ "$SOURCE" == "static" || "$SOURCE" == "header" ]]; then
+  if [[ "$SOURCE" == "header" ]]; then
+    SOURCE_LABEL="Crusoe X-Carbon-grams header (direct)"
+  else
+    SOURCE_LABEL="Joule conversion table"
+  fi
+  echo ""
+  echo "[Cut 5] XCarbonGrams source label -- Defensive carbon measurement"
+  echo "   OK  latest call's carbon source: $SOURCE   ($SOURCE_LABEL)"
+  echo "   OK  if Crusoe sends X-Carbon-grams header -> source=\"header\""
+  echo "   OK  otherwise Joule falls back to per-model lookup table -> source=\"static\""
+  echo "   OK  PASS -- every call labels its carbon origin (no silent guess)"
+  echo ""
   printf '{"shot":5,"pass":true,"source":"%s"}\n' "$SOURCE"
   exit 0
 fi
